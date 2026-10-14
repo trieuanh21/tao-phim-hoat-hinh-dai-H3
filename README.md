@@ -1,68 +1,82 @@
-# AI Local — MiniMax H3 Film Builder
+# AI Local — MiniMax H3 Film Builder V1.4 Smart Duration
 
-**Công cụ tạo prompt nhiều cảnh (multi-shot) cho MiniMax H3 Auto Shot Runner trong ComfyUI.**
+**Ứng dụng HTML chạy cục bộ để chuẩn bị prompt nhiều shot cho MiniMax H3 trong ComfyUI.**
 
-Ứng dụng giúp chuẩn bị kịch bản, mô tả nhân vật/bối cảnh, chọn định hướng đạo diễn và xuất prompt theo định dạng shot-tag để đưa vào workflow. Mục tiêu là giảm thao tác lặp lại khi tạo nhiều clip ngắn rồi ghép chúng trong CapCut.
+V1.4 bổ sung cơ chế **ước lượng thời lượng theo từng shot** và cho phép chỉnh thời lượng thủ công trước khi tạo prompt. Ứng dụng hỗ trợ soạn kịch bản, mô tả nhân vật/bối cảnh, chọn định hướng đạo diễn, rồi xuất prompt theo định dạng shot-tag cho Auto Shot Runner.
 
-> **Trạng thái:** V1 là công cụ HTML độc lập để soạn prompt. Chưa tích hợp API điều khiển ComfyUI và chưa xác nhận bằng một lượt render hoàn chỉnh trong ComfyUI. Hãy thử bằng kịch bản ngắn trước khi chạy dự án dài.
+> **Trạng thái hiện tại:** V1.4 Smart Duration là công cụ soạn prompt chạy trong trình duyệt. Ước lượng thời lượng là quy tắc heuristic dựa trên nội dung/hành động và thiết lập của người dùng, không phải AI hiểu phim hoàn chỉnh. Chưa xác nhận end-to-end bằng một lượt render ComfyUI hoàn chỉnh sau cập nhật V1.4.
 
-## Tính năng
+## Phiên bản và workflow chuẩn
 
-- Giao diện tiếng Việt, chạy trực tiếp trong trình duyệt.
-- Soạn yêu cầu/kịch bản để gửi ChatGPT.
-- Nhập thông tin nhân vật, bối cảnh, đạo cụ và ghi chú hình ảnh.
-- Gán tối đa 3 ảnh tham chiếu vào `Picture 1`, `Picture 2`, `Picture 3` tương ứng với `ref_image_0`, `ref_image_1`, `ref_image_2` trong workflow.
-- Chọn các định hướng sáng tạo như tỷ lệ khung hình, phong cách hình ảnh, ánh sáng, ngôn ngữ máy quay, nhịp dựng, chuyển động, âm thanh và nhạc nền.
-- Tạo prompt theo từng shot, dùng nhãn có thời lượng để Auto Shot Runner có thể phân tích.
-- Sao chép prompt, tải prompt dạng TXT, xuất dự án JSON và nhập lại dự án đã lưu.
-- Không cần cài Python, Node.js, thư viện hay máy chủ để mở giao diện.
+- **Ứng dụng hiện tại:** `AI_Local_MiniMax_H3_Film_Builder_V1_4_Smart_Duration.html`
+- **Workflow chuẩn của dự án:** `MINIMAX_H3_AUTO_SHOTS_V4_2.json`
+- Không ghi đè workflow chuẩn. Mọi thử nghiệm workflow cần lưu thành file phiên bản riêng.
+- App chỉ tạo prompt và file xuất; không tự điều khiển hoặc bấm chạy ComfyUI.
+- **Lưu ý quan trọng về xuất workflow JSON:** chức năng xuất JSON dùng template workflow được nhúng trong HTML và chỉ thay trường `master_prompt` của node Auto Shot Runner trong bản sao. Không mặc định xem file JSON xuất từ app là workflow V4.2. Nếu muốn dùng V4.2, hãy mở `MINIMAX_H3_AUTO_SHOTS_V4_2.json` chuẩn và dán prompt vào `master_prompt` của node `MiniMaxAutoShotRunner` (node ID 189), hoặc xác minh template xuất ra đúng phiên bản trước khi chạy.
+
+## Tính năng hiện có
+
+- Giao diện tiếng Việt, mở trực tiếp bằng Chrome hoặc Microsoft Edge.
+- Soạn nội dung yêu cầu để sao chép sang ChatGPT; app không tự gọi ChatGPT/API.
+- Nhập kịch bản và danh sách hành động theo shot.
+- Thiết lập tối đa 3 chủ thể/ảnh tham chiếu, bối cảnh, đạo cụ và quy tắc liên tục.
+- Chọn phong cách hình ảnh, tỷ lệ khung hình, tông cảm xúc, ánh sáng, ngôn ngữ máy quay, nhịp dựng, chuyển động, kiểu kết thúc, âm thanh hiện trường và nhạc nền.
+- Tạo prompt nhiều shot theo định dạng có nhãn `SHOT` và `DURATION`.
+- **Smart Duration:** ước lượng thời lượng từng shot theo quy tắc, thay vì luôn chia tổng thời lượng đều nhau.
+- **Chỉnh thời lượng từng shot:** cho phép người dùng rà soát và điều chỉnh thời lượng trước khi cập nhật prompt.
+- Cố gắng phân bổ theo tổng thời lượng đã nhập; cần kiểm tra lại tổng thời gian sau khi chỉnh tay.
+- Sao chép prompt, tải TXT, xuất/nhập cấu hình dự án JSON.
+- Hồ sơ nhân vật/bối cảnh có thể được lưu trong local storage của trình duyệt nếu trình duyệt cho phép.
+- Không cần cài Python, Node.js, thư viện hoặc máy chủ để mở app.
 
 ## Yêu cầu
 
-- Trình duyệt Chrome hoặc Microsoft Edge hiện đại.
-- Workflow ComfyUI **MiniMax H3 Auto Shot Runner** đã được cài đặt và cấu hình riêng.
-- Các model, node tùy chỉnh, ảnh tham chiếu và cấu hình GPU cần thiết cho workflow phải có sẵn trong ComfyUI.
+- Windows hoặc hệ điều hành có trình duyệt Chrome/Edge hiện đại.
+- ComfyUI đã cài đặt riêng.
+- Workflow MiniMax H3 Auto Shot Runner, các custom nodes, model, VAE, text encoder và ảnh tham chiếu phải được cấu hình sẵn trong ComfyUI.
+- Cấu hình phần cứng của dự án: Intel Core i7-1270P, RAM 32 GB, eGPU SGWZone RTX 4060 8 GB VRAM. Khả năng chạy thực tế còn phụ thuộc vào model, độ phân giải, thời lượng, node và cấu hình workflow.
 
-Ứng dụng chỉ tạo nội dung prompt; nó không cài model hoặc node cho ComfyUI.
+App không cài model, không cài node và không tự kiểm tra môi trường ComfyUI.
 
 ## Bắt đầu nhanh
 
-1. Tải `AI_Local_MiniMax_H3_Film_Builder_V1.html` về máy.
-2. Mở file bằng Chrome hoặc Edge. Không cần chạy lệnh cài đặt.
-3. Viết ý tưởng/kịch bản hoặc dùng phần tạo yêu cầu để nhờ ChatGPT phát triển kịch bản.
-4. Điền nhân vật, bối cảnh, đạo cụ và ghi chú về những gì bắt buộc phải giữ nhất quán.
-5. Chọn phong cách đạo diễn, tỷ lệ khung hình, ánh sáng, máy quay, nhịp dựng, chuyển động, thời lượng và số shot.
-6. Bấm tạo prompt, đọc lại từng shot và sửa nội dung nếu cần.
-7. Sao chép toàn bộ prompt đã tạo.
-8. Mở workflow MiniMax H3 Auto Shot Runner trong ComfyUI.
-9. Dán prompt vào trường **`master_prompt` của node `MiniMaxAutoShotRunner` (node ID 189)**.
-10. Dùng **PREVIEW SHOTS** để kiểm tra cách workflow tách shot trước khi bấm **START AUTO SHOTS**.
-11. Kiểm tra các clip MP4 được tạo ra, sau đó ghép, chỉnh nhịp và xử lý âm thanh trong CapCut.
+1. Mở `AI_Local_MiniMax_H3_Film_Builder_V1_4_Smart_Duration.html` bằng Chrome hoặc Edge.
+2. Nhập tên dự án và kịch bản. Có thể điền phần phân chia hành động theo shot để kiểm soát tốt hơn.
+3. Thiết lập nhân vật, ảnh tham chiếu, bối cảnh, đạo cụ và quy tắc liên tục.
+4. Chọn phong cách hình ảnh, máy quay, nhịp dựng, âm thanh và nhạc nền.
+5. Nhập tổng thời lượng và số shot mong muốn.
+6. Bấm **Tạo prompt** để sinh prompt và bảng ước lượng thời lượng.
+7. Kiểm tra từng shot; chỉnh thời lượng thủ công nếu cần. Sau khi chỉnh, cập nhật/tạo lại prompt theo điều khiển của app và đọc lại kết quả.
+8. Sao chép prompt hoặc tải file TXT.
+9. Mở workflow chuẩn `MINIMAX_H3_AUTO_SHOTS_V4_2.json` trong ComfyUI.
+10. Dán prompt vào `master_prompt` của node `MiniMaxAutoShotRunner` (node ID 189).
+11. Bấm **PREVIEW SHOTS** và kiểm tra số shot, thứ tự, thời lượng cùng nội dung prompt.
+12. Chỉ khi preview đúng mới bấm **START AUTO SHOTS (1 CLICK)**.
+13. Kiểm tra các clip MP4 riêng lẻ; ghép clip, chỉnh nhịp và xử lý âm thanh cuối cùng trong phần mềm dựng phim, ví dụ CapCut.
 
-### Lưu ý về ô prompt
+## Smart Duration hoạt động như thế nào?
 
-Theo cấu hình workflow hiện tại, prompt nhiều shot cần được dán vào `master_prompt` của node Auto Shot Runner, không phải chỉ dán vào ô prompt một-shot ở node 138. Nếu node hoặc tên trường trong workflow của bạn khác phiên bản được mô tả ở đây, hãy kiểm tra trực tiếp graph trước khi chạy.
+- V1.4 sử dụng các quy tắc heuristic để ước lượng thời lượng dựa trên hành động/mô tả shot và cấu hình tổng thời lượng.
+- Các shot không bắt buộc phải có thời lượng bằng nhau.
+- Người dùng có thể điều chỉnh từng shot; thời lượng đề xuất không phải quyết định đạo diễn tuyệt đối.
+- Kết quả phụ thuộc vào cách mô tả hành động. Nếu một dòng chứa nhiều hành động phức tạp, hãy cân nhắc tách thành nhiều shot hoặc tăng thời lượng.
+- Đây không phải mô hình AI phân tích video và không bảo đảm thời lượng tối ưu cho mọi tình huống.
+- Sau khi chỉnh thời lượng, hãy kiểm tra lại tổng thời lượng và prompt đầu ra. Sau đó luôn kiểm tra **PREVIEW SHOTS** trong Auto Shot Runner.
 
-## Định dạng shot
-
-Prompt được tạo theo cấu trúc gần như sau:
+Ví dụ minh họa định dạng:
 
 ```text
-[SHOT 01 | DURATION: 3s | PRIMARY CAMERA SETUP: Medium shot, locked camera]
-Mô tả nhân vật, bối cảnh, hành động, chuyển động máy quay và trạng thái cuối shot.
+[SHOT 01 | DURATION: 5s | PRIMARY CAMERA SETUP: wide establishing shot]
+Thiết lập bối cảnh và vị trí ban đầu của nhân vật.
 
-[SHOT 02 | DURATION: 3s | PRIMARY CAMERA SETUP: Close-up, slow push-in]
-Mô tả shot tiếp theo...
+[SHOT 02 | DURATION: 3s | PRIMARY CAMERA SETUP: close-up]
+Một hành động đơn giản, rõ ràng.
+
+[SHOT 03 | DURATION: 6s | PRIMARY CAMERA SETUP: medium shot]
+Một hành động phức tạp hơn cần thời gian để diễn ra.
 ```
 
-Mỗi shot nên mô tả rõ:
-
-1. **Thời gian và cỡ cảnh:** shot dài bao lâu, toàn/trung/cận hay góc máy nào.
-2. **Trạng thái đầu:** nhân vật đang ở đâu, nhìn về hướng nào, tư thế và đạo cụ đang ở trạng thái nào.
-3. **Hành động:** một hành động chính, cụ thể và có thể nhìn thấy được.
-4. **Máy quay:** đứng yên, pan, tilt, tracking, push-in hoặc chuyển động phù hợp.
-5. **Trạng thái cuối:** vị trí, hướng nhìn và hành động kết thúc để shot sau có thể nối tiếp.
-6. **Tính liên tục:** giữ nhận dạng, trang phục, tóc, đạo cụ, ánh sáng và bố cục không thay đổi vô cớ.
+Các con số trên chỉ là ví dụ định dạng, không phải thời lượng bắt buộc.
 
 ## Ảnh tham chiếu
 
@@ -70,44 +84,51 @@ Mỗi shot nên mô tả rõ:
 - `Picture 2` → `ref_image_1`
 - `Picture 3` → `ref_image_2`
 
-Hãy xác nhận đúng ảnh trong workflow trước khi render. Việc chọn nhãn ảnh trong ứng dụng giúp prompt nói rõ ảnh nào dùng cho nhân vật hoặc bối cảnh; ứng dụng không tự tải ảnh lên ComfyUI hay tự gắn file ảnh vào node.
+Chọn đúng ảnh trong workflow và xác minh ảnh đã được nạp vào các cổng tham chiếu tương ứng. Việc ghi tên ảnh trong prompt không tự tải ảnh lên ComfyUI hoặc tự kết nối file ảnh.
 
 ## Lưu và chuyển dự án
 
-- **TXT:** lưu prompt đã tạo để dùng lại hoặc đưa vào workflow.
-- **JSON:** lưu các lựa chọn và dữ liệu dự án để nhập lại trong ứng dụng.
-- **Dữ liệu cục bộ:** ứng dụng không cần tài khoản hay API key. Hãy tự quản lý các file JSON/TXT đã xuất và không chia sẻ chúng nếu có nội dung riêng tư.
+- **TXT:** lưu prompt đã tạo.
+- **Cấu hình dự án JSON:** lưu các thiết lập để nhập lại trong app.
+- **Workflow JSON:** tạo một bản sao từ template nhúng trong app và thay `master_prompt`; cần xác minh phiên bản workflow trước khi dùng. Workflow chuẩn hiện tại của dự án vẫn là `MINIMAX_H3_AUTO_SHOTS_V4_2.json`.
+- **Hồ sơ cục bộ:** hồ sơ có thể được lưu trong local storage của trình duyệt. Dữ liệu có thể không được chia sẻ giữa các trình duyệt hoặc giữa các cách mở file khác nhau.
+- App không gửi nội dung ra API theo thiết kế hiện tại; vẫn nên tránh lưu thông tin nhạy cảm vào prompt hoặc file dự án nếu không cần thiết.
 
-## Giới hạn đã biết
+## Giới hạn và trạng thái kiểm thử
 
-- Không gọi ChatGPT tự động; phần yêu cầu cho ChatGPT cần được sao chép sang ChatGPT rồi mang kết quả trở lại ứng dụng.
-- Không kết nối trực tiếp hoặc bấm chạy ComfyUI thay người dùng.
-- Việc chia kịch bản thành shot dựa trên quy tắc xử lý văn bản đơn giản, không phải mô hình AI hiểu phim. Luôn kiểm tra số shot, thời lượng, hành động và tính liên tục trước khi chạy.
-- Không đảm bảo mọi prompt sẽ được mọi phiên bản Auto Shot Runner phân tích giống nhau. Hãy kiểm tra bằng **PREVIEW SHOTS**.
-- Chất lượng, độ dài, tên file và việc tiếp tục/resume phụ thuộc vào workflow Auto Shot Runner, model, node tùy chỉnh và cấu hình ComfyUI đang dùng.
-- Chưa có kiểm thử end-to-end xác nhận toàn bộ quy trình render; V1 nên được xem là bản hỗ trợ soạn prompt.
+- App không tự gọi ChatGPT và không điều khiển ComfyUI.
+- Tự chia shot từ kịch bản là hỗ trợ bằng quy tắc văn bản; nên nhập outline từng shot để kiểm soát chính xác hơn.
+- Smart Duration là ước lượng heuristic, không phải AI hiểu ngữ nghĩa hoàn chỉnh.
+- App không xác nhận model, custom node, ảnh tham chiếu hoặc GPU đã sẵn sàng.
+- Prompt được tạo ra không bảo đảm workflow sẽ phân tích chính xác; cần kiểm tra bằng **PREVIEW SHOTS** trước khi chạy.
+- Chưa xác nhận end-to-end rằng mọi thao tác của V1.4 và toàn bộ lượt render đều hoạt động hoàn hảo trong môi trường ComfyUI thực tế.
+- Không được xem việc xuất JSON thành công là bằng chứng workflow đã render thành công.
 
-## Cấu trúc repository gợi ý
+## Cấu trúc file gợi ý
 
 ```text
 AI-Local-MiniMax-H3-Film-Builder/
 ├── README.md
-└── AI_Local_MiniMax_H3_Film_Builder_V1.html
+├── AI_Local_MiniMax_H3_Film_Builder_V1_4_Smart_Duration.html
+└── MINIMAX_H3_AUTO_SHOTS_V4_2.json
 ```
 
-## Lộ trình dự kiến
+## Việc nên kiểm thử tiếp theo
 
-- [ ] Kiểm thử bằng kịch bản 3–4 shot trong workflow thực tế.
-- [ ] Xác nhận quy tắc phân tách shot, thời lượng và đầu ra MP4.
-- [ ] Cải thiện cách chia kịch bản và kiểm tra tính liên tục.
-- [ ] Nghiên cứu tích hợp ComfyUI API để giảm thao tác sao chép thủ công.
+- [ ] Mở app V1.4 bằng Chrome/Edge và xác nhận giao diện hiển thị bình thường.
+- [ ] Tạo prompt thử với 3–4 shot có hành động khác nhau.
+- [ ] Chỉnh thời lượng một shot và xác nhận prompt được cập nhật đúng.
+- [ ] Kiểm tra tổng thời lượng sau khi chỉnh từng shot.
+- [ ] Dán prompt vào workflow V4.2 chuẩn và kiểm tra **PREVIEW SHOTS**.
+- [ ] Render một số shot ngắn trước khi chạy cả phim.
+- [ ] Xác minh riêng chức năng xuất workflow JSON để tránh nhầm template nhúng với workflow V4.2 chuẩn.
 
-Các mục trên là kế hoạch dự kiến, không phải tính năng đã có trong V1.
+Các mục này là checklist kiểm thử còn lại, không phải tính năng đã được xác nhận hoàn tất.
 
-## Đóng góp và báo lỗi
+## Báo lỗi
 
-Khi báo lỗi, vui lòng ghi phiên bản HTML, phiên bản workflow Auto Shot Runner, thông báo lỗi đầy đủ và một prompt thử nghiệm ngắn. Không gửi API key, mật khẩu hoặc thông tin nhạy cảm.
+Khi báo lỗi, hãy cung cấp phiên bản app, tên file workflow đang dùng, thông báo lỗi đầy đủ và một prompt thử nghiệm ngắn. Không gửi mật khẩu, API key hoặc thông tin nhạy cảm.
 
 ## Giấy phép
 
-Chưa chỉ định giấy phép cho repository. Nếu muốn người khác sử dụng, sửa đổi hoặc phân phối lại mã nguồn, hãy chọn và thêm một tệp giấy phép phù hợp trước khi công bố.
+Chưa chỉ định giấy phép cho repository. Trước khi công bố hoặc cho phép phân phối lại, hãy chọn giấy phép phù hợp.
