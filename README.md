@@ -1,4 +1,4 @@
-# AI Local — MiniMax H3 Film Builder V1
+# AI Local — MiniMax H3 Film Builder
 
 **Công cụ tạo prompt nhiều cảnh (multi-shot) cho MiniMax H3 Auto Shot Runner trong ComfyUI.**
 
