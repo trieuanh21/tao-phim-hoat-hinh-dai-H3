@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Local — MiniMax H3 Film Builder</title>
+<title>AI Local — MiniMax H3 Film Builder V1.1</title>
 <style>
 :root{color-scheme:dark;--bg:#0b1015;--panel:#121a22;--panel2:#17222d;--line:#2b3947;--text:#edf3f8;--muted:#a9b8c7;--accent:#65d6a6;--accent2:#86b7ff;--warn:#ffd27d;--danger:#ff9292;--radius:16px}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 500px at 50% -150px,#203544 0%,transparent 70%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
@@ -19,13 +19,23 @@
   <header class="hero">
     <div>
       <div class="eyebrow">AI Local · ComfyUI · MiniMax H3</div>
-      <h1>Film Builder <span style="color:var(--accent)">V1</span></h1>
+      <h1>Film Builder <span style="color:var(--accent)">V1.1</span></h1>
       <p>Biến kịch bản thành prompt nhiều shot có quy tắc nhân vật, bối cảnh, đạo diễn và âm thanh — sẵn sàng sao chép vào Auto Shot Runner của workflow.</p>
     </div>
     <div class="local-pill">● Chạy cục bộ · Không cần API</div>
   </header>
 
   <div class="notice"><b>Luồng sử dụng:</b> nhờ ChatGPT viết kịch bản → nhập nhân vật/bối cảnh → chọn ngôn ngữ đạo diễn → tạo prompt → sao chép toàn bộ vào ô <b>master_prompt</b> của node <b>MiniMaxAutoShotRunner</b> → kiểm tra PREVIEW SHOTS → bấm START AUTO SHOTS. App này tạo prompt; nó không tự bấm nút hay điều khiển ComfyUI.</div>
+
+  <section class="panel" style="border-color:#316a54;background:linear-gradient(135deg,#12251f,#121a22);margin-bottom:18px">
+    <h2>🎬 Dùng ngay: Tấm Cám — không cần điền biểu mẫu</h2>
+    <p class="sub">App được nạp sẵn một ví dụ 12 shot, 36 giây, hoạt hình 2D cổ tích điện ảnh. Bấm nút xanh để tạo lại prompt và sao chép toàn bộ vào clipboard chỉ trong một lần bấm.</p>
+    <div class="btns" style="margin-top:8px">
+      <button class="btn primary" id="copyTamCamNow">Tấm Cám — TẠO & COPY PROMPT NGAY</button>
+      <button class="btn blue" id="loadTamCam">Nạp / đặt lại ví dụ Tấm Cám</button>
+    </div>
+    <div class="help">Sau khi sao chép, mở ComfyUI và dán vào <b>master_prompt</b> của MiniMaxAutoShotRunner. Ảnh tham chiếu nếu workflow yêu cầu vẫn cần được nối đúng cổng trong ComfyUI; nút này không tự chạy render.</div>
+  </section>
 
   <div class="steps">
     <div class="step"><b><span>1</span>Kịch bản</b>Viết hoặc dán từ ChatGPT</div>
@@ -120,7 +130,7 @@
       </section>
     </aside>
   </div>
-  <div class="footer">AI Local · MiniMax H3 Film Builder V1 · Không gửi dữ liệu ra ngoài · Prompt cần được kiểm tra trước khi render.</div>
+  <div class="footer">AI Local · MiniMax H3 Film Builder V1.1 · Không gửi dữ liệu ra ngoài · Prompt cần được kiểm tra trước khi render.</div>
 </div>
 
 <script>
@@ -247,6 +257,55 @@ function buildPrompt(){
  if(lines.length!==count)setStatus('Đã tạo '+count+' shot từ '+lines.length+' dòng/câu đầu vào. Hãy rà lại các hành động được chia tự động.','warn');
  if(chars.some(c=>c.ref===envRef))setStatus('Lưu ý: ảnh tham chiếu bối cảnh đang trùng với ảnh của ít nhất một chủ thể. Nếu đây không phải chủ ý, hãy đổi Picture cho đúng vai trò.','warn');
 }
+function loadTamCamExample(shouldGenerate=true){
+  $('project').value='TamCam_FairyTale_Cinematic_V1';
+  $('script').value=`Tấm và Cám là hai chị em sống cùng nhà. Tấm hiền lành, chăm chỉ; Cám được mẹ nuông chiều. Một ngày, Tấm bắt được giỏ cá nhưng Cám lừa lấy mất. Tấm buồn bã khóc bên bờ ao, Bụt hiện ra như một làn sáng dịu và giúp cô. Sau nhiều thử thách, Tấm đến hội làng, đánh rơi chiếc hài và được nhà vua tìm thấy. Tấm trở về cung điện, sống hạnh phúc. Câu chuyện được kể theo hướng cổ tích gia đình, không bạo lực, không cảnh gây sốc; kết thúc bằng hình ảnh hy vọng.`;
+  $('outline').value=[
+    'Toàn cảnh làng quê Việt Nam xưa lúc bình minh; mái nhà tranh, hàng cau và con đường đất hiện ra trong sương vàng nhẹ.',
+    'Tấm mặc áo nâu giản dị, quét sân và gánh nước; cô dừng lại chăm sóc một chậu cây nhỏ trước hiên nhà.',
+    'Cám bước ra sân trong bộ áo rực màu hơn, nhìn chiếc giỏ cá của Tấm với vẻ tò mò và nụ cười ranh mãnh.',
+    'Bên bờ ao, Tấm đặt giỏ cá xuống rửa tay; Cám lén đổi giỏ rồi nhanh chóng chạy đi, Tấm quay lại phát hiện giỏ đã trống.',
+    'Tấm ngồi bên bờ ao, đôi vai chùng xuống và mắt rưng rưng; gợn nước lan nhẹ dưới ánh nắng chiều.',
+    'Một làn sáng ấm áp xuất hiện giữa những tán tre; Bụt hiện ra hiền từ ở phía sau Tấm, ánh sáng nhỏ li ti bay quanh.',
+    'Tấm ngẩng đầu ngạc nhiên rồi mỉm cười hy vọng; Bụt nhẹ nhàng chỉ về phía giỏ cá và con đường phía trước.',
+    'Ngày hội làng rực rỡ đèn lồng và cờ vải; Tấm trong trang phục đẹp thanh nhã bước vào sân hội, mọi người vui vẻ nhường lối.',
+    'Cận cảnh chiếc hài thêu của Tấm rơi xuống con đường lát đá; Tấm tiếp tục đi về phía trước mà chưa nhận ra.',
+    'Một đoàn tùy tùng nhặt chiếc hài và dâng lên nhà vua; nhà vua ngắm chiếc hài với vẻ tò mò, phía sau là sân cung điện sáng nắng.',
+    'Tấm gặp nhà vua trong khu vườn cung điện; cả hai trao nhau ánh nhìn thân thiện, cây hoa rung nhẹ trong gió.',
+    'Kết thúc bằng toàn cảnh Tấm đứng bên ban công cung điện nhìn ra khu vườn xanh; nắng vàng phủ khung hình, chim bay ngang trời, cảm giác bình yên và hy vọng.'
+  ].join('\n');
+  $('environmentRef').value='3';
+  $('environment').value='Làng quê Việt Nam cổ tích, nhà gỗ mái ngói và mái tranh, sân đất, hàng cau, ao sen, tre xanh, vườn hoa và cung điện cổ Việt Nam cách điệu. Bảng màu xanh ngọc, vàng nắng, nâu gỗ và đỏ gạch. Giữ vị trí tương đối của lối đi, ao, hiên nhà và cây cối nhất quán trong cùng một bối cảnh; chỉ chuyển địa điểm khi hành động kể chuyện yêu cầu.';
+  $('props').value='Giỏ tre đựng cá, gáo dừa, chổi tre, chiếc hài thêu, đèn lồng và cờ hội. Mỗi đạo cụ giữ nguyên hình dáng và trạng thái cho đến khi hành động làm thay đổi rõ ràng. Không tự thêm chữ, đồ vật hiện đại hoặc vật thể không thuộc bối cảnh cổ tích.';
+  $('continuity').value='Giữ nguyên danh tính, gương mặt, kiểu tóc, vóc dáng và trang phục của Tấm và Cám trong các shot. Tấm có vẻ hiền hậu, trang phục nâu giản dị ở nhà và trang phục lễ hội thanh nhã ở hội làng; Cám mặc trang phục màu nổi bật hơn. Bụt chỉ xuất hiện ở shot được mô tả. Giữ hướng màn hình, vị trí đạo cụ và ánh sáng liên tục; chuyển cảnh chỉ khi câu chuyện đổi địa điểm hoặc thời gian. Không dịch chuyển tức thời, không nhân đôi nhân vật, không thêm chữ trên hình.';
+  $('visualStyle').value='Hoạt hình 2D vẽ tay, storybook điện ảnh';
+  $('aspect').value='16:9';
+  $('tone').value='Phiêu lưu, kỳ ảo';
+  $('lighting').value='Nắng sớm mềm, bóng đổ dịu';
+  $('camera').value='Phối hợp toàn cảnh, trung cảnh, cận cảnh; ưu tiên máy tĩnh';
+  $('editing').value='Cắt có động cơ, mỗi shot thêm thông tin mới';
+  $('motion').value='Hoạt hình mềm mại, biểu cảm rõ';
+  $('ending').value='Giữ khung hình tĩnh vài nhịp';
+  $('customStyle').value='Vietnamese fairy-tale illustration, hand-painted 2D animation, elegant linework, layered watercolor textures, expressive but restrained faces, soft volumetric sunlight, rich foliage, coherent costume design, cinematic staging. Family-friendly, no violence, no horror, no modern objects, no text, no subtitles, no watermark.';
+  $('duration').value='36';
+  $('shotCount').value='12';
+  $('defaultShot').value='3';
+  $('sound').value='Làng quê yên bình: chim hót, gió nhẹ qua tre và lá, bước chân trên đất, tiếng nước ao, tiếng vải áo chuyển động, âm thanh hội làng xa xa. Âm thanh khớp chính xác hành động trên hình; không lời thoại, không thuyết minh.';
+  $('music').value='Nhạc điện ảnh tăng dần theo cao trào';
+  $('musicNotes').value='Nhạc cổ tích Việt Nam không lời, đàn tranh và sáo trúc nhẹ; bắt đầu êm dịu, sáng lên khi Bụt xuất hiện, vui tươi tại hội làng, kết thúc ấm áp. Không lấn át âm thanh hiện trường.';
+  $('characters').innerHTML='';characterCount=0;
+  addCharacter({name:'Tấm',ref:1,desc:'Vietnamese young woman in a traditional fairy-tale setting, gentle oval face, kind expressive dark eyes, long black hair tied simply, slim natural proportions. At home she wears a modest brown traditional tunic and dark skirt; at the village festival she wears an elegant traditional Vietnamese-inspired ceremonial outfit. Keep face, hairstyle, body proportions and costume continuity stable. If no image is connected to this reference, follow this written description.',ignore:'Không lấy nền hoặc vật thể không liên quan từ ảnh tham chiếu.'});
+  addCharacter({name:'Cám',ref:2,desc:'Vietnamese young woman, same age range as Tấm, slightly more self-satisfied facial expression, black hair styled neatly, traditional fairy-tale clothing with brighter red and gold accents to distinguish her clearly from Tấm. Keep face, hairstyle, proportions and costume continuity stable. If no image is connected to this reference, follow this written description.',ignore:'Không lấy nền hoặc vật thể không liên quan từ ảnh tham chiếu.'});
+  if(shouldGenerate){buildPrompt();setStatus('Đã nạp ví dụ Tấm Cám và tạo sẵn prompt 12 shot. Có thể bấm “Tấm Cám — TẠO & COPY PROMPT NGAY”.');}
+  else setStatus('Đã nạp lại ví dụ Tấm Cám.');
+}
+async function copyPromptToClipboard(){
+  const val=$('output').value;
+  if(!val){setStatus('Chưa có prompt để sao chép.','warn');return false;}
+  try{await navigator.clipboard.writeText(val);setStatus('Đã sao chép toàn bộ prompt vào clipboard. Sang ComfyUI, dán vào master_prompt bằng Ctrl+V.');return true;}
+  catch(e){$('output').focus();$('output').select();try{const ok=document.execCommand('copy');setStatus(ok?'Đã sao chép prompt. Sang ComfyUI và nhấn Ctrl+V.':'Trình duyệt không cho phép tự sao chép. Prompt đã được chọn; nhấn Ctrl+C.','warn');return ok;}catch(_){setStatus('Trình duyệt chặn sao chép tự động. Prompt đã được chọn; nhấn Ctrl+C.','warn');return false;}}
+}
+
 function getProjectData(){
  const ids=['project','script','outline','environment','environmentRef','props','continuity','visualStyle','aspect','tone','lighting','camera','editing','motion','ending','customStyle','duration','shotCount','defaultShot','sound','music','musicNotes'];
  const fields={};ids.forEach(id=>fields[id]=$(id).value);
@@ -269,11 +328,9 @@ $('makeBrief').addEventListener('click',()=>{
 });
 $('useScript').addEventListener('click',()=>{if(!$('script').value.trim()){setStatus('Hãy dán kịch bản trước.','warn');return;}const lines=getShotLines();$('outline').value=lines.slice(0,Math.max(1,parseInt($('shotCount').value,10)||4)).join('\n');setStatus('Đã lấy các dòng/câu từ kịch bản làm gợi ý shot. Cần rà lại trình tự và số shot.');});
 $('generate').addEventListener('click',()=>{if(!$('script').value.trim()&&!$('outline').value.trim()){setStatus('Hãy nhập kịch bản hoặc phân chia hành động trước.','error');return;}buildPrompt();});
-$('copy').addEventListener('click',async()=>{
- const val=$('output').value;if(!val){setStatus('Chưa có nội dung để sao chép.','warn');return;}
- try{await navigator.clipboard.writeText(val);setStatus('Đã sao chép prompt vào clipboard.');}
- catch(e){$('output').focus();$('output').select();try{document.execCommand('copy');setStatus('Đã thử sao chép. Nếu không thành công, dùng Ctrl+C.');}catch(_){setStatus('Trình duyệt chặn sao chép tự động; chọn nội dung rồi nhấn Ctrl+C.','warn');}}
-});
+$('copy').addEventListener('click',copyPromptToClipboard);
+$('loadTamCam').addEventListener('click',()=>loadTamCamExample(true));
+$('copyTamCamNow').addEventListener('click',async()=>{loadTamCamExample(true);await copyPromptToClipboard();});
 $('download').addEventListener('click',()=>{
  const val=$('output').value;if(!val){setStatus('Chưa có prompt để tải.','warn');return;}
  const blob=new Blob([val],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=($('project').value.trim()||'MiniMaxH3_Prompt')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus('Đã tạo file TXT.');
@@ -283,6 +340,7 @@ $('saveProject').addEventListener('click',()=>{
 });
 $('loadProjectBtn').addEventListener('click',()=>$('loadProject').click());
 $('loadProject').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{loadProjectData(JSON.parse(await f.text()));}catch(err){setStatus('Không nhập được: '+err.message,'error');}e.target.value='';});
+loadTamCamExample(true);
 })();
 </script>
 </body>
