@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AI Local — MiniMax H3 Film Builder</title>
+<style>
+:root{color-scheme:dark;--bg:#0b1015;--panel:#121a22;--panel2:#17222d;--line:#2b3947;--text:#edf3f8;--muted:#a9b8c7;--accent:#65d6a6;--accent2:#86b7ff;--warn:#ffd27d;--danger:#ff9292;--radius:16px}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(1200px 500px at 50% -150px,#203544 0%,transparent 70%),var(--bg);color:var(--text);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+.wrap{max-width:1200px;margin:auto;padding:22px 16px 50px}.hero{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;margin-bottom:20px}.eyebrow{color:var(--accent);font-weight:800;font-size:12px;letter-spacing:.13em;text-transform:uppercase}.hero h1{margin:6px 0;font-size:clamp(25px,4vw,38px);line-height:1.1}.hero p{margin:8px 0;color:var(--muted);max-width:750px}.local-pill{white-space:nowrap;border:1px solid #316a54;color:#b7ffda;background:#112b22;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700}
+.notice{padding:13px 15px;border:1px solid #6e5930;background:#292214;color:#ffe6b0;border-radius:12px;margin:14px 0 20px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:20px 0}.step{padding:12px;border:1px solid var(--line);background:#10171e;border-radius:12px;color:var(--muted);font-size:13px}.step b{display:block;color:var(--text);font-size:14px;margin-bottom:3px}.step span{display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#263543;color:var(--accent);margin-right:7px;font-weight:800}
+.layout{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);gap:16px;align-items:start}.panel{background:linear-gradient(180deg,rgba(22,32,42,.98),rgba(16,23,30,.98));border:1px solid var(--line);border-radius:var(--radius);padding:18px;margin-bottom:16px;box-shadow:0 10px 30px #0002}.panel h2{margin:0 0 5px;font-size:18px}.sub{color:var(--muted);font-size:13px;margin:0 0 15px}.section-head{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.field{margin:0 0 12px}.field:last-child{margin-bottom:0}label{display:block;font-size:13px;font-weight:750;color:#dbe6ef;margin:0 0 6px}input,textarea,select{width:100%;background:#0b1218;border:1px solid #344454;border-radius:10px;color:var(--text);padding:10px 11px;font:inherit;outline:none}input:focus,textarea:focus,select:focus{border-color:var(--accent2);box-shadow:0 0 0 3px #86b7ff1a}textarea{resize:vertical;min-height:92px}textarea.tall{min-height:150px}textarea.output{min-height:460px;font:12px/1.55 ui-monospace,SFMono-Regular,Consolas,monospace;white-space:pre;tab-size:2}.help{font-size:12px;color:var(--muted);margin-top:5px}.btns{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.btn{border:1px solid #415568;background:#1c2b38;color:var(--text);padding:10px 13px;border-radius:10px;font-weight:750;cursor:pointer;font:inherit;font-size:13px}.btn:hover{filter:brightness(1.13)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#072116}.btn.blue{background:#254b78;border-color:#3971ad}.btn.ghost{background:transparent}.btn.danger{border-color:#754343;color:#ffc1c1}.btn.small{padding:6px 9px;font-size:12px}.choice-row{display:flex;flex-wrap:wrap;gap:8px}.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid #3b4b5b;background:#0e161d;border-radius:999px;padding:7px 10px;font-size:12px;color:#d9e5ee;cursor:pointer}.chip input{width:auto;margin:0;accent-color:var(--accent)}.card{background:#0d151c;border:1px solid #2c3b49;border-radius:12px;padding:13px;margin:10px 0}.card-top{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:10px}.card-top strong{font-size:14px}.card .grid2{gap:9px}.card textarea{min-height:70px}.meter{display:flex;justify-content:space-between;gap:10px;color:var(--muted);font-size:12px;margin-top:8px}.status{margin-top:10px;min-height:22px;font-size:13px;color:var(--accent)}.status.warn{color:var(--warn)}.status.error{color:var(--danger)}.output-head{position:sticky;top:8px;z-index:3;background:#121a22f2;backdrop-filter:blur(10px);padding-bottom:10px}.mini-summary{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0}.tag{border:1px solid var(--line);background:#0c141b;border-radius:8px;padding:5px 8px;color:#c8d7e4;font-size:12px}.footer{color:var(--muted);font-size:12px;text-align:center;margin-top:20px}.checkline{display:flex;gap:8px;align-items:flex-start;color:var(--muted);font-size:13px}.checkline input{width:auto;margin-top:4px}.hidden{display:none!important}
+@media(max-width:900px){.layout{grid-template-columns:1fr}.output-head{position:static}}@media(max-width:600px){.wrap{padding:14px 10px 35px}.hero{display:block}.local-pill{display:inline-block;margin-top:8px}.steps{grid-template-columns:repeat(2,1fr)}.grid2,.grid3{grid-template-columns:1fr}.panel{padding:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero">
+    <div>
+      <div class="eyebrow">AI Local · ComfyUI · MiniMax H3</div>
+      <h1>Film Builder <span style="color:var(--accent)">V1</span></h1>
+      <p>Biến kịch bản thành prompt nhiều shot có quy tắc nhân vật, bối cảnh, đạo diễn và âm thanh — sẵn sàng sao chép vào Auto Shot Runner của workflow.</p>
+    </div>
+    <div class="local-pill">● Chạy cục bộ · Không cần API</div>
+  </header>
+
+  <div class="notice"><b>Luồng sử dụng:</b> nhờ ChatGPT viết kịch bản → nhập nhân vật/bối cảnh → chọn ngôn ngữ đạo diễn → tạo prompt → sao chép toàn bộ vào ô <b>master_prompt</b> của node <b>MiniMaxAutoShotRunner</b> → kiểm tra PREVIEW SHOTS → bấm START AUTO SHOTS. App này tạo prompt; nó không tự bấm nút hay điều khiển ComfyUI.</div>
+
+  <div class="steps">
+    <div class="step"><b><span>1</span>Kịch bản</b>Viết hoặc dán từ ChatGPT</div>
+    <div class="step"><b><span>2</span>Nhân vật & bối cảnh</b>Khóa nguồn tham chiếu</div>
+    <div class="step"><b><span>3</span>Đạo diễn</b>Phong cách, máy quay, nhịp dựng</div>
+    <div class="step"><b><span>4</span>Tạo prompt</b>Kiểm tra rồi sao chép</div>
+  </div>
+
+  <div class="layout">
+    <main>
+      <section class="panel">
+        <h2>01 · Kịch bản</h2>
+        <p class="sub">Dán kịch bản do ChatGPT viết. Có thể ghi rõ mở đầu, diễn biến, cao trào và kết thúc. Mỗi dòng trong “phân chia hành động theo shot” sẽ trở thành một shot.</p>
+        <div class="field"><label for="project">Tên dự án</label><input id="project" value="PhimHoatHinh_01" placeholder="Ví dụ: ChuyenNhaQue_01"></div>
+        <div class="field"><label for="script">Kịch bản đầy đủ</label><textarea id="script" class="tall" placeholder="Dán kịch bản ở đây..."></textarea></div>
+        <div class="btns">
+          <button class="btn blue" id="makeBrief">Tạo yêu cầu nhờ ChatGPT viết kịch bản</button>
+          <button class="btn ghost" id="useScript">Dùng kịch bản làm gợi ý chia shot</button>
+        </div>
+        <div class="help">Nút “Tạo yêu cầu…” chỉ tạo văn bản để Thím sao chép sang ChatGPT; app HTML độc lập không tự gọi ChatGPT.</div>
+        <div class="field" style="margin-top:14px"><label for="outline">Phân chia hành động theo shot (mỗi dòng một shot)</label><textarea id="outline" placeholder="01. Toàn cảnh giới thiệu ngôi nhà sau mưa&#10;02. Cận cảnh giọt nước rơi khỏi lá&#10;03. Nhân vật bước ra vườn..."></textarea><div class="help">Để có kết quả tốt, nên kiểm tra từng dòng. Nếu để trống, app sẽ thử tách kịch bản theo dòng/câu; đây là hỗ trợ sơ bộ, không phải AI tự hiểu kịch bản.</div></div>
+      </section>
+
+      <section class="panel">
+        <div class="section-head"><h2>02 · Nhân vật, bối cảnh & đạo cụ</h2><button class="btn small" id="addCharacter">+ Nhân vật</button></div>
+        <p class="sub">Dùng Picture 1, Picture 2, Picture 3 tương ứng các cổng ảnh tham chiếu của workflow. Chọn đúng vai trò cho từng ảnh trước khi chạy.</p>
+        <div id="characters"></div>
+        <div class="grid2"><div class="field"><label for="environmentRef">Ảnh tham chiếu bối cảnh</label><select id="environmentRef"><option value="1">Picture 1 — ref_image_0</option><option value="2" selected>Picture 2 — ref_image_1</option><option value="3">Picture 3 — ref_image_2</option></select><div class="help">Chọn ảnh thật sự mô tả bối cảnh. Có thể dùng chung ảnh với nhân vật nếu đó là chủ ý.</div></div><div class="field"><label for="environment">Bối cảnh chính (Environment)</label><textarea id="environment" placeholder="Mô tả kiến trúc, bố cục, vị trí trái/phải, màu sắc, vật liệu, thời gian..."></textarea></div></div>
+        <div class="field"><label for="props">Đạo cụ quan trọng & trạng thái ban đầu</label><textarea id="props" placeholder="Ví dụ: tai nghe trên bàn; ly nước còn đầy; cửa sổ mở hé..."></textarea></div>
+        <div class="field"><label for="continuity">Quy tắc liên tục bắt buộc</label><textarea id="continuity">Giữ nguyên danh tính nhân vật, trang phục, kiểu tóc và tỷ lệ cơ thể. Giữ nguyên bố cục bối cảnh, vị trí đạo cụ và hướng màn hình. Mỗi shot bắt đầu từ trạng thái hợp lý của shot trước. Không dịch chuyển tức thời, không tự thêm hoặc làm mất đạo cụ, không lặp lại hành động đã hoàn tất.</textarea></div>
+      </section>
+
+      <section class="panel">
+        <h2>03 · Lựa chọn đạo diễn & dựng phim</h2>
+        <p class="sub">Các lựa chọn này được đưa vào prompt dưới dạng chỉ dẫn bằng ngôn ngữ tự nhiên.</p>
+        <div class="grid2">
+          <div class="field"><label for="visualStyle">Phong cách hình ảnh</label><select id="visualStyle"><option>Hoạt hình 2D vẽ tay, storybook điện ảnh</option><option>Anime Nhật Bản điện ảnh</option><option>Hoạt hình 3D điện ảnh, nhân vật cách điệu</option><option>Stop-motion thủ công</option><option>Hoạt hình 2D màu nước</option><option>Phong cách riêng mô tả bên dưới</option></select></div>
+          <div class="field"><label for="aspect">Tỷ lệ khung hình</label><select id="aspect"><option value="16:9">16:9 — phim ngang</option><option value="9:16">9:16 — video dọc</option><option value="1:1">1:1 — vuông</option><option value="4:3">4:3 — cổ điển</option></select></div>
+          <div class="field"><label for="tone">Tông cảm xúc</label><select id="tone"><option>Đời thường, chân thật, tinh tế</option><option>Hài hước nhẹ, diễn xuất nghiêm túc</option><option>Ấm áp, hoài niệm</option><option>Căng thẳng, hồi hộp</option><option>Kinh dị, bất an</option><option>Phiêu lưu, kỳ ảo</option><option>Hành động mạnh, nhịp nhanh</option></select></div>
+          <div class="field"><label for="lighting">Ánh sáng</label><select id="lighting"><option>Ánh sáng tự nhiên, nhất quán theo thời gian</option><option>Nắng sớm mềm, bóng đổ dịu</option><option>Ánh sáng chiều vàng ấm</option><option>Ánh sáng đêm, tương phản điện ảnh</option><option>Ánh sáng âm u sau mưa</option><option>Ánh sáng sân khấu cách điệu</option></select></div>
+          <div class="field"><label for="camera">Ngôn ngữ máy quay</label><select id="camera"><option>Phối hợp toàn cảnh, trung cảnh, cận cảnh; ưu tiên máy tĩnh</option><option>Máy tĩnh, bố cục rõ ràng, ít chuyển động</option><option>Tracking shot theo nhân vật, chuyển động mượt</option><option>Góc máy điện ảnh đa dạng, cắt có chủ đích</option><option>Góc rộng, chuyển động năng động</option><option>POV / góc nhìn nhân vật</option></select></div>
+          <div class="field"><label for="editing">Nhịp dựng</label><select id="editing"><option>Cắt có động cơ, mỗi shot thêm thông tin mới</option><option>Nhịp chậm, giữ khung hình lâu</option><option>Nhịp vừa, rõ hành động</option><option>Nhịp nhanh, nhiều góc cắt</option><option>Liền mạch, hạn chế cắt</option></select></div>
+          <div class="field"><label for="motion">Chuyển động</label><select id="motion"><option>Tự nhiên, tiết chế, vật lý hợp lý</option><option>Hoạt hình mềm mại, biểu cảm rõ</option><option>Năng động, cường điệu có kiểm soát</option><option>Chuyển động chậm, giàu cảm xúc</option><option>Hành động nhanh, mạnh, dứt khoát</option></select></div>
+          <div class="field"><label for="ending">Kiểu kết thúc</label><select id="ending"><option>Kết thúc bằng trạng thái hình ảnh rõ ràng</option><option>Nhân vật rời khỏi khung hình</option><option>Giữ khung hình tĩnh vài nhịp</option><option>Kết thúc bằng chi tiết cận cảnh</option><option>Kết thúc mở, gợi câu hỏi</option><option>Chốt bằng một cú hài hình ảnh</option></select></div>
+        </div>
+        <div class="field"><label for="customStyle">Ghi chú phong cách bổ sung</label><textarea id="customStyle" placeholder="Ví dụ: màu xanh ngọc, viền mực rõ, cel shading nhiều lớp; không photorealism, không chữ trên màn hình..."></textarea></div>
+        <div class="grid3">
+          <div class="field"><label for="duration">Tổng thời lượng (giây)</label><input id="duration" type="number" min="2" max="600" value="12"></div>
+          <div class="field"><label for="shotCount">Số shot</label><input id="shotCount" type="number" min="1" max="200" value="4"></div>
+          <div class="field"><label for="defaultShot">Thời lượng mặc định/shot (giây)</label><input id="defaultShot" type="number" min="1" max="30" value="3"></div>
+        </div>
+        <div class="field"><label for="sound">Âm thanh hiện trường (Diegetic sound)</label><textarea id="sound" placeholder="Tiếng môi trường, bước chân, vải vóc, đồ vật; mô tả âm thanh phải khớp hành động."></textarea></div>
+        <div class="field"><label for="music">Nhạc nền ngoài thế giới phim (Non-diegetic music)</label><select id="music"><option>N/A — không có nhạc nền</option><option>Nhạc nền nhẹ, ấm áp, tiết chế</option><option>Nhạc điện ảnh tăng dần theo cao trào</option><option>Nhạc hài hước tinh tế, không lấn át tiếng động</option><option>Nhạc kinh dị, drone và điểm nhấn giật mình</option><option>Nhạc hành động nhịp nhanh</option><option>Tùy chỉnh trong ghi chú</option></select></div>
+        <div class="field"><label for="musicNotes">Ghi chú âm thanh/nhạc bổ sung</label><textarea id="musicNotes" placeholder="Ví dụ: không lời thoại, không voice-over; tiếng chim tiếp tục xuyên qua các cú cắt..."></textarea></div>
+      </section>
+    </main>
+
+    <aside>
+      <section class="panel">
+        <div class="output-head">
+          <h2>04 · Prompt cho Auto Shot Runner</h2>
+          <p class="sub">Prompt được tạo theo dạng [SHOT NN | DURATION: Xs | PRIMARY CAMERA SETUP: ...] mà workflow đang sử dụng.</p>
+          <div class="btns">
+            <button class="btn primary" id="generate">Tạo prompt</button>
+            <button class="btn blue" id="copy">Sao chép prompt</button>
+            <button class="btn" id="download">Tải .txt</button>
+          </div>
+          <div class="mini-summary"><span class="tag" id="sumShots">0 shot</span><span class="tag" id="sumDuration">0 giây</span><span class="tag" id="sumWords">0 từ</span></div>
+        </div>
+        <div class="field"><label for="output">Master prompt</label><textarea id="output" class="output" spellcheck="false" placeholder="Bấm “Tạo prompt” để sinh nội dung..."></textarea></div>
+        <div id="status" class="status" role="status"></div>
+      </section>
+      <section class="panel">
+        <h2>Checklist trước khi chạy</h2>
+        <p class="sub">Đánh dấu để tránh chạy hàng loạt sai đầu vào.</p>
+        <label class="checkline"><input type="checkbox" id="checkRefs"> Đã tải đúng ảnh vào các cổng ref_image tương ứng.</label><br>
+        <label class="checkline"><input type="checkbox" id="checkDuration"> Tổng thời lượng và số shot hợp lý.</label><br>
+        <label class="checkline"><input type="checkbox" id="checkPrompt"> Đã đọc PREVIEW SHOTS và kiểm tra prompt chia shot.</label><br>
+        <label class="checkline"><input type="checkbox" id="checkOutput"> Đã xác nhận thư mục đầu ra và đủ dung lượng ổ đĩa.</label>
+        <div class="btns"><button class="btn" id="saveProject">Xuất cấu hình dự án (.json)</button><button class="btn" id="loadProjectBtn">Nhập cấu hình</button><input id="loadProject" class="hidden" type="file" accept=".json,application/json"></div>
+      </section>
+      <section class="panel">
+        <h2>Cách chạy trong ComfyUI</h2>
+        <ol style="padding-left:20px;color:var(--muted);font-size:13px">
+          <li>Mở workflow <b>MINIMAX_H3_AUTO_SHOTS_V4_CONTINUITY.json</b> hoặc bản đã xác nhận đang chạy tốt.</li>
+          <li>Dán toàn bộ output vào trường <b>master_prompt</b> của node <b>MiniMaxAutoShotRunner</b> (node xanh).</li>
+          <li>Kiểm tra chế độ <b>SHOT TAGS / AUTO PARAGRAPHS</b> và bấm <b>PREVIEW SHOTS</b>.</li>
+          <li>Nếu số shot, thời lượng và nội dung preview đúng, bấm <b>START AUTO SHOTS (1 CLICK)</b>.</li>
+          <li>Kiểm tra các MP4 riêng lẻ; ghép và chỉnh âm thanh cuối cùng trong CapCut.</li>
+        </ol>
+        <div class="help">Nếu node runner báo không nhận dạng được shot tag hoặc preview khác dự kiến, dừng lại và sửa prompt trước khi chạy toàn bộ. Không dựa vào app này để xác nhận workflow đã render thành công.</div>
+      </section>
+    </aside>
+  </div>
+  <div class="footer">AI Local · MiniMax H3 Film Builder V1 · Không gửi dữ liệu ra ngoài · Prompt cần được kiểm tra trước khi render.</div>
+</div>
+
+<script>
+(function(){
+'use strict';
+const $ = id => document.getElementById(id);
+let characterCount = 0;
+const refNames = ['Picture 1','Picture 2','Picture 3'];
+const refMap = ['ref_image_0','ref_image_1','ref_image_2'];
+
+function addCharacter(data={}){
+  if(characterCount>=3){setStatus('Workflow hiện có 3 cổng ảnh tham chiếu. Để tránh prompt trỏ tới ảnh không được kết nối, tối đa 3 nhân vật/định nghĩa tham chiếu trong bản này.','warn');return;}
+  characterCount++;
+  const n=characterCount;
+  const div=document.createElement('div');
+  div.className='card';
+  div.dataset.character='1';
+  div.innerHTML=`
+    <div class="card-top"><strong>Chủ thể ${n}</strong><button class="btn small danger remove" type="button">Xóa</button></div>
+    <div class="grid2">
+      <div class="field"><label>Tên/loại chủ thể</label><input class="c-name" placeholder="Ví dụ: Cô gái chính" value="${esc(data.name|| (n===1?'Nhân vật chính':n===2?'Nhân vật phụ':'Đạo cụ/bối cảnh phụ'))}"></div>
+      <div class="field"><label>Ảnh tham chiếu</label><select class="c-ref">${refNames.map((r,i)=>`<option value="${i+1}" ${String(data.ref||n)===String(i+1)?'selected':''}>${r} — ${refMap[i]}</option>`).join('')}</select></div>
+    </div>
+    <div class="field"><label>Đặc điểm cần giữ</label><textarea class="c-desc" placeholder="Ngoại hình, trang phục, dấu hiệu nhận dạng, vật thể hoặc chi tiết cần khóa...">${esc(data.desc||'')}</textarea></div>
+    <div class="field"><label>Điều không được lấy từ ảnh / ngoại lệ</label><input class="c-ignore" placeholder="Ví dụ: không lấy nền của ảnh nhân vật" value="${esc(data.ignore||'')}"></div>`;
+  div.querySelector('.remove').addEventListener('click',()=>{div.remove();renumberCharacters();});
+  $('characters').appendChild(div);
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function renumberCharacters(){[...$('characters').children].forEach((el,i)=>el.querySelector('.card-top strong').textContent='Chủ thể '+(i+1));characterCount=$('characters').children.length;}
+function setStatus(msg,type=''){const el=$('status');el.textContent=msg;el.className='status '+type;}
+function getCharacters(){return [...$('characters').querySelectorAll('.card')].map((el,i)=>({name:el.querySelector('.c-name').value.trim()||('Subject '+(i+1)),ref:Number(el.querySelector('.c-ref').value),desc:el.querySelector('.c-desc').value.trim(),ignore:el.querySelector('.c-ignore').value.trim()}));}
+function getShotLines(){
+  let raw=$('outline').value.trim();
+  if(raw){
+    return raw.split(/\n+/).map(x=>x.replace(/^\s*(?:\d+[\.\):\-]|[-*•])\s*/,'').trim()).filter(Boolean);
+  }
+  raw=$('script').value.trim();
+  if(!raw)return [];
+  let lines=raw.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+  if(lines.length>1)return lines;
+  return raw.split(/(?<=[.!?。！？])\s+/).map(x=>x.trim()).filter(Boolean);
+}
+function splitToCount(lines,count){
+  if(!lines.length)return [];
+  if(lines.length===count)return lines;
+  if(lines.length>count){
+    const out=[]; for(let i=0;i<count;i++){const start=Math.floor(i*lines.length/count),end=Math.floor((i+1)*lines.length/count);out.push(lines.slice(start,end).join(' '));}return out;
+  }
+  const out=lines.slice();
+  while(out.length<count){const i=out.length;out.push('Tiếp tục diễn biến hợp lý từ shot trước: '+lines[Math.min(i,lines.length-1)]);}
+  return out;
+}
+function distributeDurations(total,count){
+  total=Math.max(count,Math.round(Number(total)||count));
+  const base=Math.floor(total/count),extra=total%count;
+  return Array.from({length:count},(_,i)=>base+(i<extra?1:0));
+}
+function cameraFor(i,count){
+ const cam=$('camera').value;
+ const presets=[
+  'wide establishing shot, static camera',
+  'medium shot, eye-level camera',
+  'close-up on the important action or prop',
+  'over-the-shoulder or rear medium shot',
+  'three-quarter medium shot',
+  'detail insert, stable composition',
+  'wide shot that clearly establishes spatial relationships',
+  'close-up reaction shot'
+ ];
+ if(cam.includes('máy tĩnh'))return i===0?'static wide establishing shot':'static '+presets[(i+1)%presets.length];
+ if(cam.includes('Tracking'))return i===0?'wide tracking establishing shot':'smooth tracking '+presets[(i+1)%presets.length];
+ if(cam.includes('POV'))return i===0?'establishing point-of-view shot':'point-of-view shot focused on the current action';
+ if(cam.includes('đa dạng'))return presets[i%presets.length];
+ if(cam.includes('năng động'))return i%2===0?'dynamic wide shot with controlled camera movement':'dynamic medium shot with clear subject framing';
+ return presets[i%presets.length];
+}
+function timecode(seconds){const s=Math.max(0,Number(seconds)||0);const mm=Math.floor(s/60);const ss=Math.floor(s%60);const ms=Math.round((s-Math.floor(s))*1000);return String(mm).padStart(2,'0')+':'+String(ss).padStart(2,'0')+'.'+String(ms).padStart(3,'0');}
+function buildPrompt(){
+ const project=$('project').value.trim()||'MiniMaxH3_Project';
+ const script=$('script').value.trim();
+ const lines=getShotLines();
+ const count=Math.max(1,Math.min(200,parseInt($('shotCount').value,10)||Math.max(1,lines.length)));
+ const fallbackShot=Math.max(1,Math.min(30,parseInt($('defaultShot').value,10)||3));
+ const total=Math.max(count,Math.min(600,parseInt($('duration').value,10)||count*fallbackShot));
+ const actions=splitToCount(lines,count);
+ const durations=distributeDurations(total,count);
+ const chars=getCharacters();
+ const env=$('environment').value.trim()||'The environment shown in the designated reference image. Preserve its visible layout and spatial relationships.';
+ const envRef=Math.max(1,Math.min(3,parseInt($('environmentRef').value,10)||2));
+ const props=$('props').value.trim()||'Preserve all visible props and their positions unless the described action changes them.';
+ const continuity=$('continuity').value.trim();
+ const style=$('visualStyle').value==='Phong cách riêng mô tả bên dưới'?($('customStyle').value.trim()||'Consistent cinematic animation style'):$('visualStyle').value;
+ const custom=$('customStyle').value.trim();
+ const tone=$('tone').value,lighting=$('lighting').value,camera=$('camera').value,editing=$('editing').value,motion=$('motion').value,ending=$('ending').value;
+ const aspect=$('aspect').value;
+ const sound=$('sound').value.trim()||'Natural environmental ambience and subtle action-specific sounds synchronized with visible events.';
+ const music=$('music').value;
+ const musicNotes=$('musicNotes').value.trim();
+ const charDefs=chars.map((c,i)=>{
+   const pic=refNames[c.ref-1],ref=refMap[c.ref-1];
+   return `<Subject ${i+1}> ${c.name}, based on <${pic}> (${ref}): ${c.desc||'Preserve the visible identity and defining features of this subject from the assigned reference.'} ${c.ignore?('Reference restriction: '+c.ignore+'.'):''}`;
+ }).join('\n');
+ const retained=chars.map((c,i)=>`<Subject ${i+1}> (${c.name}): fully_preserved — preserve the defining features from <${refNames[c.ref-1]}> (${refMap[c.ref-1]}). Allow only changes required by the described action, pose, expression or interaction.`).join('\n');
+ const chunks=[];
+ let elapsed=0;
+ for(let i=0;i<count;i++){
+   const dur=durations[i],start=elapsed,end=elapsed+dur;elapsed=end;
+   const action=actions[i]||'Continue the story with one clear, physically plausible action.';
+   const cam=cameraFor(i,count);
+   const shotSummary=(i===0?'Establish the scene and begin the action. ':i===count-1?'Complete the action and arrive at a clear final visual state. ':'Advance the story with the next action. ')+action;
+   let detail=`${timecode(start)}–${timecode(end)} — ${cam}. ${action} Keep the subject readable and the action physically plausible. ${editing}. ${motion}.`;
+   if(i===0)detail+=` Establish the environment and initial positions before the action develops.`;
+   else detail+=` Begin from a plausible continuation of the previous shot; preserve character positions, prop states, screen direction and lighting unless the action explicitly changes them.`;
+   if(i===count-1)detail+=` Ending: ${ending}. Finish on a clear, stable final state suitable for cutting in an editor.`;
+   const prompt=`[SHOT ${String(i+1).padStart(2,'0')} | DURATION: ${dur}s | PRIMARY CAMERA SETUP: ${cam}]\nsubject_definitions:\n${charDefs||'<Subject 1> Main subject: use the designated reference image if supplied; otherwise follow the written description.'}\n<Subject ${Math.max(1,chars.length+1)}> Environment, based on <Picture ${Math.min(3,chars.length+1)}>: ${env} Reference: <Picture ${envRef}> (${refMap[envRef-1]}). Preserve the same spatial layout, screen direction and lighting continuity.\nsummary:\n${shotSummary}\nretention_analysis:\n${retained||'<Subject 1>: preserve all defining features of the designated reference.'}\nEnvironment: fully_preserved — ${env} Props and state: ${props} Continuity rules: ${continuity||'Preserve spatial and temporal continuity.'}\ndetailed_description:\nThe target video is a ${style} sequence with a ${tone.toLowerCase()} tone. Lighting: ${lighting}. Camera language: ${camera}. Editing rhythm: ${editing}. Movement: ${motion}. Maintain the same visual language and believable physical behavior throughout. ${custom&&$('visualStyle').value!=='Phong cách riêng mô tả bên dưới'?'Additional visual direction: '+custom+'.':''}\n${detail}\nVisual DNA: ${style}; ${tone}; ${lighting}; coherent colors, consistent character design, stable environment, readable silhouettes and clean composition. Aspect ratio ${aspect}. No on-screen text, subtitles, logos or watermarks unless explicitly requested.\nEditorial constraints: Each shot contains one principal action. Use a motivated cut between shots, not an unrequested cut inside this clip. No duplicated completed actions, teleportation, unexplained prop changes, extra characters or contradictory object states. Preserve the assigned reference roles. ${continuity}\noverall_soundscape:\n${sound} Keep ambience and acoustic perspective consistent with the environment. Synchronize action-specific sounds with the visible action. No dialogue or voice-over unless explicitly specified.\nnon_diegetic_music:\n${music}${musicNotes?' — '+musicNotes:''}`;
+   chunks.push(prompt);
+ }
+ $('output').value=chunks.join('\n\n');
+ $('sumShots').textContent=count+' shot';
+ $('sumDuration').textContent=durations.reduce((a,b)=>a+b,0)+' giây';
+ $('sumWords').textContent=($('output').value.match(/\S+/g)||[]).length+' từ';
+ setStatus('Đã tạo '+count+' shot. Hãy kiểm tra PREVIEW SHOTS trong Auto Shot Runner trước khi chạy hàng loạt.');
+ if(lines.length!==count)setStatus('Đã tạo '+count+' shot từ '+lines.length+' dòng/câu đầu vào. Hãy rà lại các hành động được chia tự động.','warn');
+ if(chars.some(c=>c.ref===envRef))setStatus('Lưu ý: ảnh tham chiếu bối cảnh đang trùng với ảnh của ít nhất một chủ thể. Nếu đây không phải chủ ý, hãy đổi Picture cho đúng vai trò.','warn');
+}
+function getProjectData(){
+ const ids=['project','script','outline','environment','environmentRef','props','continuity','visualStyle','aspect','tone','lighting','camera','editing','motion','ending','customStyle','duration','shotCount','defaultShot','sound','music','musicNotes'];
+ const fields={};ids.forEach(id=>fields[id]=$(id).value);
+ fields.characters=getCharacters();fields.output=$('output').value;
+ return {app:'AI Local MiniMax H3 Film Builder',version:1,exportedAt:new Date().toISOString(),fields};
+}
+function loadProjectData(data){
+ if(!data||!data.fields)throw new Error('File cấu hình không đúng định dạng.');
+ Object.entries(data.fields).forEach(([id,val])=>{if($(id)&&typeof val==='string')$(id).value=val;});
+ $('characters').innerHTML='';characterCount=0;(data.fields.characters||[]).forEach(addCharacter);
+ if(data.fields.output)$('output').value=data.fields.output;
+ setStatus('Đã nhập cấu hình dự án.');
+}
+$('addCharacter').addEventListener('click',()=>addCharacter());
+addCharacter({name:'Nhân vật chính',ref:1,desc:'Danh tính, khuôn mặt, kiểu tóc, tuổi ngoại hình, tỷ lệ cơ thể, trang phục và đặc điểm nhận dạng cần giữ nguyên.',ignore:'Không lấy nền của ảnh nhân vật.'});
+
+$('makeBrief').addEventListener('click',()=>{
+ const brief=`Hãy viết kịch bản phim hoạt hình có thể sản xuất bằng MiniMax H3 trong ComfyUI.\n\nTên dự án: ${$('project').value}\nÝ tưởng/kịch bản thô:\n${$('script').value||'[Nhập ý tưởng tại đây]'}\n\nNhân vật:\n${getCharacters().map(c=>'- '+c.name+': '+c.desc+' (tham chiếu Picture '+c.ref+')').join('\n')}\nBối cảnh: ${$('environment').value}\nĐạo cụ: ${$('props').value}\nPhong cách: ${$('visualStyle').value}; ${$('tone').value}; ${$('lighting').value}\nTổng thời lượng: ${$('duration').value} giây; số shot: ${$('shotCount').value}; tỷ lệ ${$('aspect').value}.\n\nYêu cầu: tạo kịch bản có mở đầu, phát triển, cao trào (nếu phù hợp) và kết thúc; chia thành đúng số shot dự kiến; mỗi shot có một hành động chính quan sát được, cỡ cảnh/góc máy, trạng thái đầu và cuối, thời lượng; duy trì liên tục nhân vật, bối cảnh, đạo cụ, hướng màn hình và ánh sáng. Tránh các hành động không thể hiện được bằng hình ảnh. Trả lời bằng tiếng Việt, có thể dùng tên cỡ cảnh điện ảnh tiếng Anh trong ngoặc. Không tự giả định ảnh tham chiếu có nội dung ngoài mô tả.`;
+ $('output').value=brief;$('sumShots').textContent='Yêu cầu ChatGPT';$('sumDuration').textContent='';$('sumWords').textContent=(brief.match(/\S+/g)||[]).length+' từ';setStatus('Đã tạo yêu cầu viết kịch bản. Sao chép nội dung sang ChatGPT, sau đó dán kịch bản nhận được vào ô Kịch bản.');$('output').focus();
+});
+$('useScript').addEventListener('click',()=>{if(!$('script').value.trim()){setStatus('Hãy dán kịch bản trước.','warn');return;}const lines=getShotLines();$('outline').value=lines.slice(0,Math.max(1,parseInt($('shotCount').value,10)||4)).join('\n');setStatus('Đã lấy các dòng/câu từ kịch bản làm gợi ý shot. Cần rà lại trình tự và số shot.');});
+$('generate').addEventListener('click',()=>{if(!$('script').value.trim()&&!$('outline').value.trim()){setStatus('Hãy nhập kịch bản hoặc phân chia hành động trước.','error');return;}buildPrompt();});
+$('copy').addEventListener('click',async()=>{
+ const val=$('output').value;if(!val){setStatus('Chưa có nội dung để sao chép.','warn');return;}
+ try{await navigator.clipboard.writeText(val);setStatus('Đã sao chép prompt vào clipboard.');}
+ catch(e){$('output').focus();$('output').select();try{document.execCommand('copy');setStatus('Đã thử sao chép. Nếu không thành công, dùng Ctrl+C.');}catch(_){setStatus('Trình duyệt chặn sao chép tự động; chọn nội dung rồi nhấn Ctrl+C.','warn');}}
+});
+$('download').addEventListener('click',()=>{
+ const val=$('output').value;if(!val){setStatus('Chưa có prompt để tải.','warn');return;}
+ const blob=new Blob([val],{type:'text/plain;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=($('project').value.trim()||'MiniMaxH3_Prompt')+'.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus('Đã tạo file TXT.');
+});
+$('saveProject').addEventListener('click',()=>{
+ const blob=new Blob([JSON.stringify(getProjectData(),null,2)],{type:'application/json;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=($('project').value.trim()||'FilmProject')+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);setStatus('Đã xuất cấu hình dự án JSON.');
+});
+$('loadProjectBtn').addEventListener('click',()=>$('loadProject').click());
+$('loadProject').addEventListener('change',async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{loadProjectData(JSON.parse(await f.text()));}catch(err){setStatus('Không nhập được: '+err.message,'error');}e.target.value='';});
+})();
+</script>
+</body>
+</html>
